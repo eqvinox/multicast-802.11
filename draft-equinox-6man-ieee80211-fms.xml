@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim: et:ts=2:sw=2
+  -->
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-equinox-6man-ieee80211-fms" ipr="trust200902" obsoletes="" submissionType="IETF" consensus="true" xml:lang="en" version="3">
+  <front>
+    <title abbrev="draft-equinox-6man-ieee80211-fms">IPv6 wants 802.11 Flexible Multicast Service</title>
+    <seriesInfo name="Internet-Draft" value="draft-equinox-6man-ieee80211-fms"/>
+    <author fullname="David 'equinox' Lamparter" initials="D" surname="Lamparter">
+      <organization>NetDEF, Inc.</organization>
+      <address>
+        <postal>
+          <city>Leipzig</city>
+          <country>Germany</country>
+        </postal>
+        <email>equinox@diac24.net</email>
+        <email>equinox@opensourcerouting.org</email>
+      </address>
+    </author>
+    <date year="2025"/>
+    <area>Internet</area>
+    <workgroup>IPv6 Maintenance</workgroup>
+    <keyword>IPv6</keyword>
+    <keyword>802.11</keyword>
+    <keyword>multicast</keyword>
+    <keyword>dtim</keyword>
+    <keyword>fms</keyword>
+  </front>
+  <middle>
+    <section anchor="purpose">
+      <name>Document Purpose</name>
+      <t>
+          IEEE 802.11 Flexible Multicast Service (FMS) addresses reliability
+          issues in IPv6 due to aggressive powersave optimizations in 802.11
+          client devices.
+      </t>
+      <t>
+          The intent of this document is to collect consensus in the IETF
+          6man (IPv6 Maintenance) working group to request either/both
+          the IEEE 802.11 Working Group and/or the Wifi Alliance's
+          certification process to make implementing FMS a requirement.
+      </t>
+    </section>
+    <section anchor="issue">
+      <name>Issue</name>
+      <t>
+          For IPv6 to function correctly, hosts must receive traffic addressed
+          to a set of multicast addresses.  Specifically, router advertisements
+          sent to ff02::1 (33:33:00:00:00:01) and address resolution traffic
+          addressed to target-address-specific groups.  Losing some or all of
+          this traffic makes IPv6 unreliable or entirely nonfunctional.
+      </t>
+      <t>
+          Receiving multicast traffic is power intensive for 802.11 clients
+          since they need to wake up their receivers quite frequently even if
+          there is no network activity.  In the normal case, multicast traffic
+          is sent after beacons, in 100ms intervals (the "DTIM interval"
+          AP-side setting can affect this.)
+      </t>
+      <t>
+          In response, a notable number of 802.11 implementations have started
+          to simply skip a chosen subset of these events.  As IPv4 is less
+          reliant on broadcast/multicast, this frequently does not break IPv4.
+          IPv6 connectivity, however, is adversely affected due to the
+          resulting loss of some multicast traffic.
+      </t>
+    </section>
+    <section anchor="fms">
+      <name>Remedy: Flexible Multicast Service</name>
+      <t>
+          The 802.11 Flexible Multicast Service protocol feature, introduced
+          in 802.11v-2011, allows clients to explicitly request that some
+          given multicast groups are buffered and delivered at less frequent
+          intervals.  The result is the same power savings as above, but since
+          it is negotiated with the AP, the traffic loss is avoided.
+      </t>
+      <t>
+          Unfortunately, FMS is not mandatory to implement for 802.11
+          compliance and not required for Wifi Alliance certification.
+          This document is to express IETF interest to push for FMS
+          implementations.
+      </t>
+    </section>
+  </middle>
+  <back>
+    <section anchor="procedural">
+      <name>IETF procedural note</name>
+      <t>
+          This document is not intended to advance to RFC; the only purpose
+          is to aid the IETF consensus process to affirm the request.
+      </t>
+    </section>
+  </back>
+</rfc>
