@@ -24,10 +24,7 @@
     <keyword>multicast</keyword>
     <keyword>dtim</keyword>
     <keyword>fms</keyword>
-  </front>
-  <middle>
-    <section anchor="purpose">
-      <name>Document Purpose</name>
+    <abstract>
       <t>
           IEEE 802.11 Flexible Multicast Service (FMS) addresses reliability
           issues in IPv6 due to aggressive powersave optimizations in 802.11
@@ -39,7 +36,9 @@
           the IEEE 802.11 Working Group and/or the Wifi Alliance's
           certification process to make implementing FMS a requirement.
       </t>
-    </section>
+    </abstract>
+  </front>
+  <middle>
     <section anchor="issue">
       <name>Issue</name>
       <t>
