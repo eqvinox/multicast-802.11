@@ -46,7 +46,8 @@
           For IPv6 to function correctly, hosts must receive traffic addressed
           to a set of multicast addresses.  Specifically, router advertisements
           sent to ff02::1 (33:33:00:00:00:01) and address resolution traffic
-          addressed to target-address-specific groups.  Losing some or all of
+          addressed to target-address-specific groups (cf. <xref target="IPV6NEIGH"/>).
+          Losing some or all of
           this traffic makes IPv6 unreliable or entirely nonfunctional.
       </t>
       <t>
@@ -83,6 +84,29 @@
     </section>
   </middle>
   <back>
+    <references>
+      <name>References</name>
+      <references>
+        <name>Informative References</name>
+        <reference anchor="IEEE80211">
+           <front>
+             <title>
+                 IEEE Standard for Information Technology—Telecommunications
+                 and Information Exchange between Systems Local and Metropolitan
+                 Area Networks—Specific Requirements Part 11: Wireless LAN Medium
+                 Access Control (MAC) and Physical Layer (PHY) Specifications
+             </title>
+             <author>
+               <organization>IEEE 802</organization>
+             </author>
+             <date year='2020'/>
+           </front>
+        </reference>
+        <reference anchor="IPV6NEIGH">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
+      </references>
+    </references>
     <section anchor="procedural">
       <name>IETF procedural note</name>
       <t>
