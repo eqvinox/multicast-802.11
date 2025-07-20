@@ -57,11 +57,11 @@
           AP-side setting can affect this.)
       </t>
       <t>
-          In response, a notable portions of 802.11 implementations have
+          In response, a number of 802.11 implementations have
           started to simply skip a chosen subset of these events, likely
           in violation of the 802.11 standard. As IPv4 is less reliant on
           broadcast/multicast, this frequently does not break IPv4.
-          IPv6 connectivity, however, is adversely affected due to the
+          IPv6 connectivity, however, is adversely affected by the
           resulting loss of some multicast traffic.
       </t>
     </section>
