@@ -1,5 +1,5 @@
 DRAFTS = \
-	 draft-equinox-6man-ieee80211-fms.xml \
+	 draft-ietf-6man-ieee80211-fms.xml \
 	 # end
 
 

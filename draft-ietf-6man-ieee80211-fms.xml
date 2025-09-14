@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- vim: et:ts=2:sw=2
   -->
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-equinox-6man-ieee80211-fms" ipr="trust200902" obsoletes="" submissionType="IETF" consensus="true" xml:lang="en" version="3">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-ietf-6man-ieee80211-fms" ipr="trust200902" obsoletes="" submissionType="IETF" consensus="true" xml:lang="en" version="3">
   <front>
-    <title abbrev="draft-equinox-6man-ieee80211-fms">IPv6 wants 802.11 Flexible Multicast Service</title>
-    <seriesInfo name="Internet-Draft" value="draft-equinox-6man-ieee80211-fms"/>
+    <title abbrev="draft-ietf-6man-ieee80211-fms">IPv6 wants 802.11 Flexible Multicast Service</title>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-6man-ieee80211-fms"/>
     <author fullname="David 'equinox' Lamparter" initials="D" surname="Lamparter">
       <organization>NetDEF, Inc.</organization>
       <address>
