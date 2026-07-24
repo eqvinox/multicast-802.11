@@ -15,6 +15,11 @@
         <email>equinox@opensourcerouting.org</email>
       </address>
     </author>
+    <author fullname="Jen Linkova" initials="J" surname="Linkova">
+      <address>
+        <email>furry13@gmail.com</email>
+      </address>
+    </author>
     <date year="2026"/>
     <area>Internet</area>
     <workgroup>IPv6 Maintenance</workgroup>
@@ -40,13 +45,16 @@
           The intent of this document is to collect consensus in the IETF
           6man (IPv6 Maintenance) working group to request either/both
           the IEEE 802.11 Working Group and/or the Wifi Alliance's
-          certification process to make implementing FMS a requirement.
+          certification process to improve IP multicast reliability.
+          The document proposes two additional requirements: first, implementing FMS and
+          secondly, sending IPv6 Router Advertisements [RFC4861] for the 'all-hosts' multicast
+          IPv6 address to Ethernet unicast.
       </t>
     </abstract>
   </front>
   <middle>
     <section anchor="issue">
-      <name>Issue</name>
+      <name>Problem Statement</name>
       <t>
           For IPv6 to function correctly, hosts must receive traffic addressed
           to a set of multicast addresses.  Specifically, router advertisements
@@ -71,8 +79,10 @@
           resulting loss of some multicast traffic.
       </t>
     </section>
+    <section anchor="proposal">
+    <name>Solution Proposal</name>
     <section anchor="fms">
-      <name>Remedy: Flexible Multicast Service</name>
+      <name>Flexible Multicast Service</name>
       <t>
           The 802.11 Flexible Multicast Service protocol feature, introduced
           in 802.11v-2011, allows clients to explicitly request that some
@@ -86,6 +96,18 @@
           This document is to express IETF interest to push for FMS
           implementations.
       </t>
+    </section>
+    <section anchor="m2u">
+    <name>Converting Multicast IPv6 Router Advertisements to Ethernet Unicast</name>
+    <t>
+    Receiving IPv6 Router Advertisements are crucial for IPv6 hosts operation.
+    For clients which lack FMS or DMS support, the way to ensure reliable transmission of
+    multicast IPv6 RAs would be to sent them as Ethernet unicast over 802.11 media.
+    This document is to express IETF interest to see 802.11 access points to sent IPv6 RAs with 
+    IPv6 destination address of ff02::1 (and the Ethernet destination address of 33:33:00:00:00:01) 
+    as Ethernet unicast packets to then connected clients.
+    </t>
+    </section>
     </section>
   </middle>
   <back>
