@@ -298,7 +298,38 @@
       </section>
       <section anchor="opportunistic_ap_m2u">
         <name>Opportunistic AP-side Multicast to Unicast conversion</name>
-        <t>TODO: write this</t>
+        <t>
+            In a manner quite similar to DMS, it is possible for the AP to
+            convert multicast traffic to unicast by tracking the MLD join state
+            of its associated clients.  This works without the client's
+            cooperation or even awareness.
+        </t>
+        <t>
+            An issue with this approach, already alluded to in the mDNS problem
+            description, is that there is no standardized way to transfer MLD
+            snooping state between devices.  If a client roams to another AP,
+            and the new AP <bcp14>MUST</bcp14> in this case send an MLD general
+            query, ideally unicast to the roaming client.  Additionally,
+            clients' IPv6 stack <bcp14>MAY</bcp14> proactively send MLD reports
+            when it detects a roaming event has happened.
+        </t>
+        <t>
+            A known implementation insufficiency with this approach is that
+            MLD snooping is commonly an Ethernet bridge function, and ignores
+            (builds no) state for ff02::1 since all hosts are intended to
+            receive multicast traffic to that address by specification.  The
+            multicast to unicast conversion function then, rather than using
+            unicat to all associated clients, leaves packets to this address
+            unmodified as multicast.  RAs are sent to this address, and get
+            lost.  (The Linux kernel, which forms the basis for a lot of AP
+            products, does this exactly this in all current mainline versions.)
+        </t>
+        <t>
+            Unfortunately, MLD snooping is also known to be somewhat fragile
+            regarding correct configuration of the remainder of the network.
+            (TODO: extend text on multiple queriers &amp; different MLD snooping
+            behavior)
+        </t>
       </section>
     <section anchor="router_m2u">
       <name>Router side Converting Multicast IPv6 Router Advertisements to Ethernet Unicast</name>
@@ -333,9 +364,47 @@
         </t>
       </section>
       <section anchor="client_rdisc">
-        <name>Further use of Router Discovery by the client</name>
-        <t>TODO: write this</t>
+        <name>Increased use of Router Solicitations by the client</name>
+        <t>
+            An IPv6 host might attempt to address the issue of losing IPv6 on
+            after lost multicast RAs by sending Router Solicitations on
+            detecting the issue.
+        </t>
+        <t>
+            This is both unlikely to address the issue as well as counter to
+            the basic design of IPv6 Router Advertisements.  RAs were designed
+            as a push-based mechanism, so that network changes can propagate
+            quickly to clients.  Additionally, section 6.2.6. of RFC4861
+            explicitly calls out that routers would commonly respond to these
+            solicitations with multicast responses, which would then again be
+            affected by multicast delivery reliability.
+        </t>
+        <t>
+            Similar to the previous section, this approach is listed for
+            completeness, and advised against.  There is no normative statement
+            here since it is ultimately up to the client's IPv6 stack how and
+            when to use IPv6 router solicitations.
+        </t>
       </section>
+    </section>
+    <section anchor="bridges">
+      <name>Wireless extenders and bridges</name>
+      <t>
+          The existence of 802.11 "repeaters", connecting multiple hosts
+          (regardless of how) behind a single 802.11 client, additionally
+          complicates the matters described here.  Further, 802.11 has the
+          concept of 4-address frames applicable to this kind of device, but
+          to avoid compatibility issues they may also utilize 3-address frames
+          and "MAC NAT" or Proxy ND/ARP.  Actual behavior on this is often
+          just outside applicable specifications' scope, or straight up in
+          violation.
+      </t>
+      <t>
+          This document defers discussing expected or recommended behavior for
+          these devices for a later document, hopefully with more experience
+          which approaches are effective on the more limited problem outlined
+          here.
+      </t>
     </section>
     <section anchor="proposal">
       <name>Request to IEEE and Wi-Fi Alliance</name>
