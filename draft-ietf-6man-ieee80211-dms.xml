@@ -3,7 +3,7 @@
   -->
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-ietf-6man-ieee80211-dms-01" ipr="trust200902" obsoletes="" submissionType="IETF" consensus="true" xml:lang="en" version="3">
   <front>
-    <title abbrev="draft-ietf-6man-ieee80211-dms">IPv6 has issues with 802.11 multicast reliability</title>
+    <title abbrev="draft-ietf-6man-ieee80211-dms">IPv6 issues with 802.11 multicast reliability</title>
     <author fullname="David 'equinox' Lamparter" initials="D" surname="Lamparter">
       <organization>NetDEF, Inc.</organization>
       <address>
@@ -41,12 +41,12 @@
       </t>
       <t>
           Additionally, this document serves to collect consensus in the IETF
-          process to make both the IEEE and Wifi Alliance aware of these issues
+          process to make both the IEEE and Wi-Fi Alliance aware of these issues
           and request they be included in consideration for future development.
           802.11 Directed Multicast Service and Flexible Multicast Service are
           noted as existing protocol features that may warrant more
           consideration.  However, other solutions may be more appropriate and
-          are left to the expertise of the IEEE and Wifi Alliance.
+          are left to the expertise of the IEEE and Wi-Fi Alliance.
       </t>
     </abstract>
   </front>
@@ -201,7 +201,7 @@
       </section>
     </section>
     <section anchor="current_oper">
-      <name>Current operational approaches</name>
+      <name>Operational approaches</name>
       <section anchor="large_dtim">
         <name>Increasing DTIM period</name>
         <t>
@@ -246,43 +246,62 @@
             synchronizing with an 802.11 client implementing aggressive
             power-save by sleeping through a given fraction of DTIM periods.
         </t>
-        <t>
-            Beyond configuration or implementation on a router, an AP might
-            theoretically also implement this by buffering received RAs and
-            retransmitting them multiple times only onto its BSS side.  This is
-            anticipated to be very error prone since there may be multiple
-            routers, each sending multiple RAs, choosing arbitrarily to
-            distribute RA contents across them.  Additionally, other than
-            lifetimes there is no
-            notification of specific RA contents being removed.
-
-            point <bcp14>MUST</bcp14>
-        </t>
       </section>
     </section>
     <section anchor="current_impl">
-      <name>Current implementation approaches</name>
-    </section>
-    <section anchor="proposal">
-    <name>Solution Proposal</name>
-    <section anchor="fms">
-      <name>Flexible Multicast Service</name>
-      <t>
-          The 802.11 Flexible Multicast Service protocol feature, introduced
-          in 802.11v-2011, allows clients to explicitly request that some
-          given multicast groups are buffered and delivered at less frequent
-          intervals.  The result is the same power savings as above, but since
-          it is negotiated with the AP, the traffic loss is avoided.
-      </t>
-      <t>
-          Unfortunately, FMS is not mandatory to implement for 802.11
-          compliance and not required for Wifi Alliance certification.
-          This document is to express IETF interest to push for FMS
-          implementations.
-      </t>
-    </section>
-    <section anchor="m2u">
-    <name>Converting Multicast IPv6 Router Advertisements to Ethernet Unicast</name>
+      <name>Implementation approaches</name>
+      <section anchor="dms">
+        <name>Directed Multicast Service</name>
+        <t>
+            The 802.11 Directed Multicast Service protocol feature, introduced
+            in 802.11v-2011, enables clients to negotiate with the AP to
+            receive specific multicast groups as unicast traffic on the
+            underlying 802.11 layers.  The AP then applies the same power
+            save mechanisms as with unicast traffic, i.e. buffers it and
+            delivers it when the client signals to the AP that it is awake.
+        </t>
+        <t>
+            There is a notable detail distinction when DMS is used, in contrast
+            with opportunistic AP-side multicast-to-unicast conversion.  The
+            protocol layers in 802.11 are such that an IPv6 (or other) frame
+            passing into 802.11 can have its destination MAC address be kept
+            unchanged as multicast in its MPDU, and get wrapped in an 802.11
+            MSDU with a different unicast destination (receiver) address.
+            Opportunistic conversion generally changes the MPDU destination
+            address instead, which then propagates into the MSDU.
+        </t>
+        <t>
+            While visible to the client on receiving such frames (and thus
+            possibly impacting other protocols), this distinction is harmless
+            to IPv6 due to RFC 6085 [TODO: ref/link] behavior.  RFC 6085 is
+            understood to be widely implemented.
+        </t>
+        <t>
+            Unfortunately, DMS is not mandatory to implement for 802.11
+            compliance and not required for Wi-Fi Alliance certification.
+        </t>
+      </section>
+      <section anchor="fms">
+        <name>Flexible Multicast Service</name>
+        <t>
+            The 802.11 Flexible Multicast Service protocol feature, introduced
+            in 802.11v-2011, allows clients to explicitly request that some
+            given multicast groups are buffered and delivered at less frequent
+            intervals.  The result is the same power savings as above, but since
+            it is negotiated with the AP, the traffic loss is avoided.
+        </t>
+        <t>
+            Unfortunately, as with DMS, FMS is not mandatory to implement for
+            802.11 compliance and not required for Wi-Fi Alliance certification.
+        </t>
+      </section>
+      <section anchor="opportunistic_ap_m2u">
+        <name>Opportunistic AP-side Multicast to Unicast conversion</name>
+        <t>TODO: write this</t>
+      </section>
+    <section anchor="router_m2u">
+      <name>Router side Converting Multicast IPv6 Router Advertisements to Ethernet Unicast</name>
+      <t>TODO: fit editorially into new doc structure</t>
     <t>
     Receiving IPv6 Router Advertisements are crucial for IPv6 hosts operation.
     For clients which lack FMS or DMS support, the way to ensure reliable transmission of
@@ -292,6 +311,74 @@
     as Ethernet unicast packets to then connected clients.
     </t>
     </section>
+      <section anchor="ap_ra_buffer">
+        <name>AP-side IPv6 RA repetition</name>
+        <t>
+            Beyond configuration or implementation on a router, an AP might
+            theoretically also implement this by buffering received RAs and
+            retransmitting them multiple times only onto its BSS side.  This is
+            anticipated to be very error prone since there may be multiple
+            routers, each sending multiple RAs, choosing arbitrarily to
+            distribute RA contents across them.  There is a high risk this will
+            lead to APs accidentally retaining stale information, as well as
+            not correctly supporting uncommon scenarios (e.g. multiple routers)
+            or future extensions.</t>
+        <t>
+            This approach is listed here for completeness, in particular since
+            the AP is in the unique position to align repeated RAs with the
+            DTIM period.  This document makes no recommendation for or against
+            this approach, other than it being <bcp14>RECOMMENDED</bcp14> to
+            exercise a lot of care in testing.
+        </t>
+      </section>
+      <section anchor="client_rdisc">
+        <name>Further use of Router Discovery by the client</name>
+        <t>TODO: write this</t>
+      </section>
+    </section>
+    <section anchor="proposal">
+      <name>Request to IEEE and Wi-Fi Alliance</name>
+      <t>
+          The IETF (in particular the 6man working group) would like to make
+          aware and involve the IEEE and Wi-Fi Alliance on the issues described
+          in this document.  In particular:
+      </t>
+      <ul>
+        <li>
+            is the issue of lost multicast traffic due to uncoordinated
+            power-save sleep mechanisms known, and what is the perspective on
+            it? Aside from practical reality, is the behavior exhibited by
+            these client devices something that must be expected within 802.11
+            specifications and Wi-Fi Alliance certifications, and dealt with?
+        </li>
+        <li>
+            Is there any input on the various approaches outlined in this
+            document?
+        </li>
+        <li>
+            802.11 FMS seems to have been expressly designed to deliver the
+            power save gains on multicast reception without causing this issue.
+            It does not seem to be implemented widely.  Is this observation
+            correct, and is there background on it?
+        </li>
+        <li>
+            There was some input that 802.11 DMS is more likely to be both
+            practically useful as well as successful in addressing this issue.
+            It seems to suffer from the same lack of implementations as FMS.
+            Is this view roughly correct, and is there context on it?
+        </li>
+        <li>
+            If there are technical issues with DMS or FMS, is there ongoing
+            work to fix them?  Is there other related standards development
+            work that should've been taken into account for this issue?
+        </li>
+        <li>
+            Assuming there aren't technical issues preventing it, would the
+            Wi-Fi Alliance be able to include these considerations in future
+            certification requirements, e.g. require some of support for one
+            or more of the protocol solutions?
+        </li>
+      </ul>
     </section>
   </middle>
   <back>
