@@ -546,6 +546,9 @@
           The mDNS issues described in this document were brought to attention
           by Ted Lemon.  Thanks to János Farkas, Emily Kooistra, Pascal
           Thubert, and Éric Vyncke for their input on this document.
+          Additionally, Thanks to Suresh Krishnan, Mirja Kühlewind and Warren
+          Kumari for their assistance and explanations regarding liaison
+          processes.
       </t>
     </section>
   </middle>
