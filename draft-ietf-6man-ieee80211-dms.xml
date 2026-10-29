@@ -415,11 +415,11 @@
             believed to result in fewer compatibility issues.
         </t>
         <t>
-            Performing this operation requires the router to be aware of all
-            IPv6 hosts - or at least all 802.11 IPv6 hosts - on a link.  If it
-            is colocated with the (only) AP function(s) for an ESS, this could
+            Performing this operation requires the router(s) to be aware of all
+            IPv6 hosts - or at least all 802.11 IPv6 hosts - on a link.  If a
+            single router is colocated with the (only) AP function(s) for an ESS, this could
             utilize information from the 802.11 layer.  However, this stops
-            working if more APs are present or added to the ESS later.
+            working if more APs (or routers) are present or added to the ESS later.
             Alternatively, the router(s) would need to keep track of all hosts
             on the link (likely unable to distinguish 802.11 devices from
             others).
