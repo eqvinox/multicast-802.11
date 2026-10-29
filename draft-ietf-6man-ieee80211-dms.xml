@@ -404,18 +404,27 @@
             configuration.
         </t>
       </section>
-    <section anchor="router_m2u">
-      <name>Router side Converting Multicast IPv6 Router Advertisements to Ethernet Unicast</name>
-      <t>TODO: fit editorially into new doc structure</t>
-    <t>
-    Receiving IPv6 Router Advertisements are crucial for IPv6 hosts operation.
-    For clients which lack FMS or DMS support, the way to ensure reliable transmission of
-    multicast IPv6 RAs would be to sent them as Ethernet unicast over 802.11 media.
-    This document is to express IETF interest to see 802.11 access points to sent IPv6 RAs with 
-    IPv6 destination address of ff02::1 (and the Ethernet destination address of 33:33:00:00:00:01) 
-    as Ethernet unicast packets to then connected clients.
-    </t>
-    </section>
+      <section anchor="router_m2u">
+        <name>Opportunistic Unicast transmission by Router</name>
+        <t>
+            Apart from the AP performing multicast to unicast conversion on
+            packets already in flight, router(s) can send RAs as either unicast
+            packets (link-local IPv6 destination address) or unicast frames
+            (multicast IPv6 destination address, but unicast layer 2
+            destination) immediately on transmission.  The latter approach is
+            believed to result in fewer compatibility issues.
+        </t>
+        <t>
+            Performing this operation requires the router to be aware of all
+            IPv6 hosts - or at least all 802.11 IPv6 hosts - on a link.  If it
+            is colocated with the (only) AP function(s) for an ESS, this could
+            utilize information from the 802.11 layer.  However, this stops
+            working if more APs are present or added to the ESS later.
+            Alternatively, the router(s) would need to keep track of all hosts
+            on the link (likely unable to distinguish 802.11 devices from
+            others).
+        </t>
+      </section>
       <section anchor="ap_ra_buffer">
         <name>AP-side IPv6 RA repetition</name>
         <t>
