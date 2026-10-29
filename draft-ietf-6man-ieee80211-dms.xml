@@ -63,7 +63,7 @@
       <dl>
         <dt>AP</dt>
         <dd>Access Point.  A single physical device may provide multiple
-          instances of this function even on a single radio interfaces.</dd>
+          instances of this function even on a single radio interface.</dd>
         <dt>BSS</dt>
         <dd>Basic Service Set.  The definition of this term is relatively
           complex due to e.g. 802.11 mesh functionality.  In the context of
@@ -79,7 +79,7 @@
         <dd>Distribution System.  The interconnect between multiple BSS
           forming a single ESS.  May exist within a physical device (between
           multiple AP functions) or between devices.  Generally, IEEE 802.3
-          Ethernet.</dd>
+          Ethernet, possibly encapsulated/tunneled.</dd>
         <dt>DTIM Period</dt>
         <dd>Delivery Traffic Indication Map Period.  An integer value,
           multiplied with the beacon interval to arrive at the DTIM interval.
@@ -115,7 +115,8 @@
         <dt>Host</dt>
         <dd>Participant in IP on a broadcast domain, using a single interface
           with a single lower-layer address.  In IPv6, will almost always have
-          multiple IPv6 addresses even in the same cope.  An IP router consists
+          multiple IPv6 addresses even in the same scope.  Since IP forwarding
+          is not relevant to the considerations here, an IP router consists
           of multiple hosts for the purposes of this document.</dd>
         <dt>RA</dt>
         <dd>IPv6 Router Advertisement</dd>
@@ -123,6 +124,19 @@
         <dd>Data unit of IP ("layer 3") without further outer headers or
           encapsulation.</dd>
       </dl>
+      <section anchor="req_language">
+        <name>Requirements Language</name>
+        <t>
+            This document does not specify new protocol behavior, it only
+            outlines implementation choices and highlights some consequences.
+            Therefore, no specific requirements language is used in this
+            document.
+        </t>
+        <t>
+            Some approaches outlined in this document may benefit from a more
+            rigorous description; this is out of scope for the time being.
+        </t>
+      </section>
     </section>
     <section anchor="issue">
       <name>Problem Statement</name>
@@ -141,34 +155,36 @@
             since they need to wake up their receivers quite frequently even if
             there is no network activity.  In the normal case, multicast traffic
             is sent after beacons, in 100ms intervals (the DTIM period
-            AP-side setting can affect this.)
+            AP-side setting defines this.)
         </t>
         <t>
             In response, a number of 802.11 implementations have
-            started to simply skip a chosen subset of these events, likely
-            in violation of the 802.11 standard. As IPv4 is less reliant on
-            broadcast/multicast, this frequently does not break IPv4.
-            IPv6 connectivity, however, is adversely affected by the
+            started to simply skip a chosen subset of these events.  Whether
+            this conforms to the 802.11 standard is beyond the purview of the
+            IETF and the insight of the authors of this document.  As IPv4 is
+            less reliant on broadcast/multicast, this frequently does not break
+            IPv4.  IPv6 connectivity, however, is adversely affected by the
             resulting loss of some multicast traffic.
         </t>
         <t>
             Albeit somewhat difficult to gather data for, there is a sufficient
             amount of input being heard at the IETF that IPv6 is in fact
-            suffering from issues due to multicast reliability.
+            suffering from issues due to multicast reliability.  Enterprise
+            Wi-Fi networks (involving a "controller") seem largely unaffected.
         </t>
       </section>
-      <section>
+      <section anchor="mdns_roam">
         <name>mDNS (and other multicast) roaming issues</name>
         <t>
             A related but distinct issue in the reliability of IPv6 multicast
             exists in delivery of mDNS multicast traffic after an 802.11 client
             device roams to another 802.11 access point.  mDNS uses the IPv6
             multicast group ff02::fb and the IPv6 host will report that group
-            as joined using MLD.
+            as joined using <xref target="MLDv2">MLD</xref>.
         </t>
         <t>
             If the access point or another device in the network (802.11 DS)
-            between access points performs MLD snooping, these devices will be
+            between access points performs <xref target="MLDsnoop">MLD snooping</xref>, these devices will be
             maintaining a table for each multicast group, tracking joins based
             on either IPv6 addresses, MAC addresses or ports.
         </t>
@@ -178,9 +194,9 @@
             implementation, it will not re-report the group as joined by
             sending MLD until either queried again or the mDNS component leaves
             and rejoins the group.  A MLD querier is necessary for MLD snooping
-            operation, therefore this typically results in a period of a few
-            seconds to minutes (depending on the querier's timer configuration)
-            where MLD snooping state does not reflect the joined group.  mDNS
+            operation, and will dictate timing.  With typical MLD querier
+            timers, this results in a period of a few seconds to minutes where
+            MLD snooping state does not reflect the joined group.  mDNS
             then receives no advertisements, service discovery does not work
             and a poor user experience results.
         </t>
@@ -200,6 +216,21 @@
             between devices performing MLD snooping.
         </t>
       </section>
+      <section anchor="general_context">
+        <name>General notes</name>
+        <t>
+            The issues discussed here are not new and have been discussed
+            previously, e.g. in <xref target="MCAST802">RFC 9119</xref>.  The
+            actual situation is slowly shifting, but is in general observed to
+            persist in some shape.
+        </t>
+        <t>
+            Some of the approaches described in this document are already in
+            use.  However, they do not seem to be sufficient to fully address
+            this.  It is expressly suggested here that multiple of the outlined
+            approaches may need to be taken simultaneously.
+        </t>
+      </section>
     </section>
     <section anchor="current_oper">
       <name>Operational approaches</name>
@@ -215,13 +246,11 @@
             dropping.
         </t>
         <t>
-            Values larger than 5 <bcp14>SHOULD NOT</bcp14> be used as they may
-            interfere with IPv4 Proxy ARP functions, some of which use a 600ms
-            delay by default.  If this is known to not apply to a given
-            product or installation, higher values <bcp14>MAY</bcp14> be
-            usable.  However, larger values also result in higher latency on
-            multicast delivery, which will be visible to end users as e.g.
-            delay on mDNS discovery.
+            Values larger than 5 may interfere with IPv4 Proxy ARP functions,
+            some of which use a 600ms delay by default.  Larger values also
+            result in higher latency on multicast delivery, which
+            will be visible to end users as e.g. delay on mDNS
+            discovery.
         </t>
       </section>
       <section anchor="high_ra_rate">
@@ -237,19 +266,19 @@
         </t>
         <t>
             This approach, if seen at large, is likely to result in a "race to
-            the bottom" where networks send more and more traffic, and devices
-            drop more and more traffic.
+            the bottom" where networks send more and more multicast traffic,
+            and devices drop more and more of that traffic.
         </t>
         <t>
             If this approach is intentionally added to an RA sender
-            implementation, it <bcp14>MUST</bcp14> ensure there is sufficient
+            implementation, timers need to be choosen carefully to ensure there is sufficient
             variance in RA transmission timers at the sub-second level to avoid
             synchronizing with an 802.11 client implementing aggressive
             power-save by sleeping through a given fraction of DTIM periods.
         </t>
       </section>
     </section>
-    <section anchor="current_impl">
+    <section anchor="impl">
       <name>Implementation approaches</name>
       <section anchor="dms">
         <name>Directed Multicast Service</name>
@@ -274,12 +303,28 @@
         <t>
             While visible to the client on receiving such frames (and thus
             possibly impacting other protocols), this distinction is harmless
-            to IPv6 due to RFC 6085 [TODO: ref/link] behavior.  RFC 6085 is
-            understood to be widely implemented.
+            to IPv6 due to <xref target="IPV6MC_L2UC">RFC 6085</xref> behavior.
+            RFC 6085 is understood to be widely implemented.
+        </t>
+        <t>
+            Implementing DMS on the client side requires the IPv6 stack to
+            specify a frame classifier for use in the TCLAS element.  There are
+            multiple choices that would match IPv6 multicast RAs (or other
+            neighbor discovery traffic), in particular it could match on either
+            the IPv6 group address or the layer 2 multicast address.  Making
+            this choice consistent may be beneficial to AP compatibility or
+            resource usage.
         </t>
         <t>
             Unfortunately, DMS is not mandatory to implement for 802.11
             compliance and not required for Wi-Fi Alliance certification.
+            However, contrasted against <xref target="MCAST802">RFC 9119</xref>
+            stating in 2021 that "DMS is not currently implemented in products",
+            there is a change that some Enterprise AP products now list DMS
+            available.  No client is known to the authors to be implementing
+            DMS yet, but some available AP side support (even if in systems
+            that already don't see much of these issues) at least breaks a
+            "chicken and egg" problem in getting client implementations.
         </t>
       </section>
       <section anchor="fms">
@@ -292,26 +337,51 @@
             it is negotiated with the AP, the traffic loss is avoided.
         </t>
         <t>
+            FMS uses the same TCLAS element as DMS.  The paragraph on
+            classifier choice above applies here as well.
+        </t>
+        <t>
             Unfortunately, as with DMS, FMS is not mandatory to implement for
             802.11 compliance and not required for Wi-Fi Alliance certification.
+        </t>
+      </section>
+      <section anchor="gcr">
+        <name>GroupCast with Retries</name>
+        <t>
+            GroupCast with Retries (GCR) may also work to alleviate some of the
+            issues described here.  However, GCR is believed to be the most
+            complex approach noted in this document, as it operates at a lowest
+            802.11 layer of all listed here.
+        </t>
+        <t>
+          <cref>
+              TODO: GCR section needs some expansion.
+          </cref>
         </t>
       </section>
       <section anchor="opportunistic_ap_m2u">
         <name>Opportunistic AP-side Multicast to Unicast conversion</name>
         <t>
             In a manner quite similar to DMS, it is possible for the AP to
-            convert multicast traffic to unicast by tracking the MLD join state
-            of its associated clients.  This works without the client's
+            convert multicast traffic to unicast by tracking the <xref target="MLDv2">MLD</xref> join state
+            of its associated clients (<xref target="MLDsnoop">MLD snooping</xref>).  This works without the client's
             cooperation or even awareness.
+        </t>
+        <t>
+            The actual frames seen on the wireless medium with this approach
+            are commonly slightly different from the ones seen if DMS were in
+            use.  Refer to the paragraph on MSDU and MPDU destination addresses
+            in the DMS section.
         </t>
         <t>
             An issue with this approach, already alluded to in the mDNS problem
             description, is that there is no standardized way to transfer MLD
-            snooping state between devices.  If a client roams to another AP,
-            and the new AP <bcp14>MUST</bcp14> in this case send an MLD general
-            query, ideally unicast to the roaming client.  Additionally,
-            clients' IPv6 stack <bcp14>MAY</bcp14> proactively send MLD reports
-            when it detects a roaming event has happened.
+            snooping state between devices.  Since this behavior is an AP
+            implementation choice, it is sensible for the AP to also compensate
+            for this by sending an MLD general query, ideally unicast to the
+            roaming client.  Additionally, clients' IPv6 stacks could
+            proactively send MLD reports when they detect a roaming event has
+            happened.
         </t>
         <t>
             A known implementation insufficiency with this approach is that
@@ -319,16 +389,19 @@
             (builds no) state for ff02::1 since all hosts are intended to
             receive multicast traffic to that address by specification.  The
             multicast to unicast conversion function then, rather than using
-            unicat to all associated clients, leaves packets to this address
+            unicast to all associated clients, leaves packets to this address
             unmodified as multicast.  RAs are sent to this address, and get
-            lost.  (The Linux kernel, which forms the basis for a lot of AP
+            lost.  (The Linux kernel, which forms the basis for a good number of AP
             products, does this exactly this in all current mainline versions.)
         </t>
         <t>
             Unfortunately, MLD snooping is also known to be somewhat fragile
             regarding correct configuration of the remainder of the network.
-            (TODO: extend text on multiple queriers &amp; different MLD snooping
-            behavior)
+            A frequent cause of this is intermixing of <xref target="MLDv1">MLDv1</xref> and <xref target="MLDv2">MLDv2</xref>, and the
+            MLDv1 duplicate report suppression behavior (refer to section A.2. of RFC9777 for further detail).  Multiple MLD queriers
+            on a network also increase the risk for MLD snooping misbehavior,
+            meshing with issues regarding "multicast router port"
+            configuration.
         </t>
       </section>
     <section anchor="router_m2u">
@@ -358,9 +431,9 @@
         <t>
             This approach is listed here for completeness, in particular since
             the AP is in the unique position to align repeated RAs with the
-            DTIM period.  This document makes no recommendation for or against
-            this approach, other than it being <bcp14>RECOMMENDED</bcp14> to
-            exercise a lot of care in testing.
+            DTIM period.  No recommendation is made for or against this
+            approach, though there is certainly a need to exercise a lot of
+            care in testing.
         </t>
       </section>
       <section anchor="client_rdisc">
@@ -381,9 +454,9 @@
         </t>
         <t>
             Similar to the previous section, this approach is listed for
-            completeness, and advised against.  There is no normative statement
-            here since it is ultimately up to the client's IPv6 stack how and
-            when to use IPv6 router solicitations.
+            completeness, and rather advised against.  There is no normative
+            statement here since it is ultimately up to the client's IPv6 stack
+            to use additional IPv6 router solicitations.
         </t>
       </section>
     </section>
@@ -397,7 +470,7 @@
           to avoid compatibility issues they may also utilize 3-address frames
           and "MAC NAT" or Proxy ND/ARP.  Actual behavior on this is often
           just outside applicable specifications' scope, or straight up in
-          violation.
+          conflict.
       </t>
       <t>
           This document defers discussing expected or recommended behavior for
@@ -438,9 +511,18 @@
             Is this view roughly correct, and is there context on it?
         </li>
         <li>
-            If there are technical issues with DMS or FMS, is there ongoing
-            work to fix them?  Is there other related standards development
-            work that should've been taken into account for this issue?
+            Is it appropriate to call 802.11 GCR the most complex of the
+            approaches listed here, and should it be considered less likely
+            to be practically useful here?
+        </li>
+        <li>
+            If there are technical issues with DMS, FMS, or GCR, is there ongoing
+            work to fix them?  Is there other related existing or development standards
+            work that should be taken into account for this issue?
+        </li>
+        <li>
+            If DMS or FMS are to be used to address this issue, is there any
+            comment on the choices regarding the TCLAS element?
         </li>
         <li>
             Assuming there aren't technical issues preventing it, would the
@@ -461,31 +543,54 @@
              <title>
                  IEEE Standard for Information Technology—Telecommunications
                  and Information Exchange between Systems Local and Metropolitan
-                 Area Networks—Specific Requirements Part 11: Wireless LAN Medium
+                 Area Networks—Specific Requirements — Part 11: Wireless LAN Medium
                  Access Control (MAC) and Physical Layer (PHY) Specifications
              </title>
              <author>
                <organization>IEEE 802</organization>
              </author>
-             <date year='2020'/>
+             <date year='2024'/>
            </front>
+        </reference>
+        <reference anchor="MCAST802">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9119.xml" xpointer="xpointer(/reference/*)"/>
         </reference>
         <reference anchor="IPV6NEIGH">
           <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" xpointer="xpointer(/reference/*)"/>
         </reference>
+        <reference anchor="IPV6MC_L2UC">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6085.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
+        <reference anchor="MLDv1">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2710.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
+        <reference anchor="MLDv2">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9777.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
+        <reference anchor="MLDsnoop">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4541.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
       </references>
     </references>
     <section anchor="log" title="Change Log">
+      <t>
+        October 2026 [-01 after renaming]:
+        restructure the entire document.
+      </t>
       <t>
         September 2026 [-02]:
         this document is being renamed from "ieee80211-fms" to "ieee80211-dms", which may result with some document upload oddity
       </t>
     </section>
     <section anchor="procedural">
-      <name>IETF procedural note</name>
+      <name>IETF procedural note (to be removed before publishing)</name>
       <t>
-          This document is not intended to advance to RFC; the only purpose
-          is to aid the IETF consensus process to affirm the request.
+          There was a comment here earlier that this document is not intended
+          to advance to RFC.  After some consideration, the intent is now to
+          progress it to RFC, though as a document with no requirements
+          language.  However, even in the absence of such language, the concern
+          here is the specification interface between 802.11 and IPv6, hence
+          this document is kept in 6man (as opposed to v6ops).
       </t>
     </section>
   </back>
