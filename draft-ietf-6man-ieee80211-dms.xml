@@ -3,7 +3,7 @@
   -->
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-ietf-6man-ieee80211-dms-01" ipr="trust200902" obsoletes="" submissionType="IETF" consensus="true" xml:lang="en" version="3">
   <front>
-    <title abbrev="draft-ietf-6man-ieee80211-dms">IPv6 issues with 802.11 multicast reliability</title>
+    <title abbrev="draft-ietf-6man-ieee80211-dms">IPv6 issues with 802.11 multicast reliability remain</title>
     <author fullname="David 'equinox' Lamparter" initials="D" surname="Lamparter">
       <organization>NetDEF, Inc.</organization>
       <address>
@@ -46,8 +46,8 @@
           and request they be included in consideration for future development.
           802.11 Directed Multicast Service and Flexible Multicast Service are
           noted as existing protocol features that may warrant more
-          consideration.  However, other solutions may be more appropriate and
-          are left to the expertise of the IEEE and Wi-Fi Alliance.
+          consideration.  However, other solutions in that space may be more
+          appropriate and are left to the expertise of the IEEE and Wi-Fi Alliance.
       </t>
     </abstract>
   </front>
@@ -55,7 +55,7 @@
     <section anchor="terminology">
       <name>Terminology</name>
       <t>
-          The following terms reference definitions or items in IEEE 802.11.
+          The following terms reference definitions or items in <xref target="IEEE80211">IEEE 802.11</xref>.
           Please note any context beyond the acronym expansion is given purely
           to aid understanding, may contain errors and truncations, and is no
           replacement for sufficient knowledge of the IEEE 802.11 standards.
@@ -91,6 +91,8 @@
           as the same BSS to any client connected with any of them.</dd>
         <dt>FMS</dt>
         <dd>Flexible Multicast Service</dd>
+        <dt>GCR</dt>
+        <dd>GroupCast with Retry</dd>
         <dt>MPDU</dt>
         <dd>medium access control (MAC) protocol data unit (PDU).  IEEE 802.11
           specific, "down layer" data unit.  Also called MAC frame in 802.11.
@@ -113,16 +115,20 @@
         <dd>Data unit of the layer ("2", MAC) carrying IP and likely containing
           additional outer headers/encapsulation of an IP header.</dd>
         <dt>Host</dt>
-        <dd>Participant in IP on a broadcast domain, using a single interface
-          with a single lower-layer address.  In IPv6, will almost always have
+        <dd>Participant in IPv6 on a link, regarding a single interface
+          with a single link-layer address.  In IPv6, will almost always have
           multiple IPv6 addresses even in the same scope.  Since IP forwarding
           is not relevant to the considerations here, an IP router consists
-          of multiple hosts for the purposes of this document.</dd>
-        <dt>RA</dt>
-        <dd>IPv6 Router Advertisement</dd>
+          of multiple hosts for the purposes of this document.  The same
+          applies to other devices with multiple interfaces.  The link-layer
+          address is generally expected to be unique for a host, though there
+          are some poorly defined situations where it is shared (e.g. proxy ND,
+          repeaters) that require context-specific consideration.</dd>
         <dt>Packet</dt>
         <dd>Data unit of IP ("layer 3") without further outer headers or
           encapsulation.</dd>
+        <dt>RA</dt>
+        <dd>IPv6 Router Advertisement</dd>
       </dl>
       <section anchor="req_language">
         <name>Requirements Language</name>
@@ -159,7 +165,8 @@
         </t>
         <t>
             In response, a number of 802.11 implementations have
-            started to simply skip a chosen subset of these events.  Whether
+            started to simply skip a chosen subset of these events, without any 
+            other entity in the network being aware of this.  Whether
             this conforms to the 802.11 standard is beyond the purview of the
             IETF and the insight of the authors of this document.  As IPv4 is
             less reliant on broadcast/multicast, this frequently does not break
@@ -177,7 +184,7 @@
         <name>mDNS (and other multicast) roaming issues</name>
         <t>
             A related but distinct issue in the reliability of IPv6 multicast
-            exists in delivery of mDNS multicast traffic after an 802.11 client
+            exists in delivery of <xref target="MDNS">mDNS</xref> multicast traffic after an 802.11 client
             device roams to another 802.11 access point.  mDNS uses the IPv6
             multicast group ff02::fb and the IPv6 host will report that group
             as joined using <xref target="MLDv2">MLD</xref>.
@@ -186,7 +193,7 @@
             If the access point or another device in the network (802.11 DS)
             between access points performs <xref target="MLDsnoop">MLD snooping</xref>, these devices will be
             maintaining a table for each multicast group, tracking joins based
-            on either IPv6 addresses, MAC addresses or ports.
+            on either (link-local) IPv6 addresses, MAC addresses or ports (possibly association IDs in 802.11).
         </t>
         <t>
             If additionally the IPv6 end host stack is unaware of 802.11
@@ -320,7 +327,7 @@
             compliance and not required for Wi-Fi Alliance certification.
             However, contrasted against <xref target="MCAST802">RFC 9119</xref>
             stating in 2021 that "DMS is not currently implemented in products",
-            there is a change that some Enterprise AP products now list DMS
+            there is a change in that some Enterprise AP products now list DMS
             available.  No client is known to the authors to be implementing
             DMS yet, but some available AP side support (even if in systems
             that already don't see much of these issues) at least breaks a
@@ -333,30 +340,36 @@
             The 802.11 Flexible Multicast Service protocol feature, introduced
             in 802.11v-2011, allows clients to explicitly request that some
             given multicast groups are buffered and delivered at less frequent
-            intervals.  The result is the same power savings as above, but since
+            intervals.  (It can also negotiate different radio transmission
+            rates, but this is of little concern here.)
+            The result is the same power savings as above, but since
             it is negotiated with the AP, the traffic loss is avoided.
         </t>
         <t>
             FMS uses the same TCLAS element as DMS.  The paragraph on
-            classifier choice above applies here as well.
+            classifier choice above applies here as well.  FMS and DMS can be
+            implemented simultaneously, in either case it is the client that
+            has to initiate a request.  FMS has a (currently theoretical)
+            advantage in that actual radio multicast may remain available as a
+            networking tool to use, e.g. for <xref target="MC-QUIC">MC-QUIC</xref>. 
+            This is of course a moot point if it doesn't work reliably enough.
         </t>
         <t>
             Unfortunately, as with DMS, FMS is not mandatory to implement for
             802.11 compliance and not required for Wi-Fi Alliance certification.
+            Unlike DMS, the authors are not aware of any FMS implementations.
         </t>
       </section>
       <section anchor="gcr">
         <name>GroupCast with Retries</name>
         <t>
             GroupCast with Retries (GCR) may also work to alleviate some of the
-            issues described here.  However, GCR is believed to be the most
-            complex approach noted in this document, as it operates at a lowest
-            802.11 layer of all listed here.
-        </t>
-        <t>
-          <cref>
-              TODO: GCR section needs some expansion.
-          </cref>
+            issues described here.  It performs either unsolicited retries, or
+            can use a block acknowledgement mechanism to determine necessary
+            retransmissions.  However, since it operates at a lower level than
+            any other approach listed in this document, GCR is believed to be
+            the most involved (and thus unlikely to succeed).  Due to this, GCR is
+            receiving relatively little consideration in this document.
         </t>
       </section>
       <section anchor="opportunistic_ap_m2u">
@@ -411,13 +424,13 @@
             packets already in flight, router(s) can send RAs as either unicast
             packets (link-local IPv6 destination address) or unicast frames
             (multicast IPv6 destination address, but unicast layer 2
-            destination) immediately on transmission.  The latter approach is
+            destination, i.e. <xref target="IPV6MC_L2UC">RFC 6085</xref>) immediately on transmission.  The latter approach is
             believed to result in fewer compatibility issues.
         </t>
         <t>
             Performing this operation requires the router(s) to be aware of all
-            IPv6 hosts - or at least all 802.11 IPv6 hosts - on a link.  If a
-            single router is colocated with the (only) AP function(s) for an ESS, this could
+            IPv6 hosts - or at least all 802.11 IPv6 hosts - on a link.  If there
+            is only a single router, colocated with the (only) AP function(s) for an ESS, this could
             utilize information from the 802.11 layer.  However, this stops
             working if more APs (or routers) are present or added to the ESS later.
             Alternatively, the router(s) would need to keep track of all hosts
@@ -435,7 +448,7 @@
             routers, each sending multiple RAs, choosing arbitrarily to
             distribute RA contents across them.  There is a high risk this will
             lead to APs accidentally retaining stale information, as well as
-            not correctly supporting uncommon scenarios (e.g. multiple routers)
+            not correctly supporting less common scenarios (e.g. multiple routers)
             or future extensions.</t>
         <t>
             This approach is listed here for completeness, in particular since
@@ -465,20 +478,20 @@
             Similar to the previous section, this approach is listed for
             completeness, and rather advised against.  There is no normative
             statement here since it is ultimately up to the client's IPv6 stack
-            to use additional IPv6 router solicitations.
+            to use additional IPv6 router solicitations (or not).
         </t>
       </section>
     </section>
     <section anchor="bridges">
       <name>Wireless extenders and bridges</name>
       <t>
-          The existence of 802.11 "repeaters", connecting multiple hosts
-          (regardless of how) behind a single 802.11 client, additionally
+          The existence of "repeaters", which connect behind a single
+          802.11 client multiple hosts through some further wired or wireless network, additionally
           complicates the matters described here.  Further, 802.11 has the
           concept of 4-address frames applicable to this kind of device, but
           to avoid compatibility issues they may also utilize 3-address frames
           and "MAC NAT" or Proxy ND/ARP.  Actual behavior on this is often
-          just outside applicable specifications' scope, or straight up in
+          outside applicable specifications' scope, or even straight up in
           conflict.
       </t>
       <t>
@@ -516,8 +529,9 @@
         <li>
             There was some input that 802.11 DMS is more likely to be both
             practically useful as well as successful in addressing this issue.
-            It seems to suffer from the same lack of implementations as FMS.
-            Is this view roughly correct, and is there context on it?
+            It seems to suffer from the some lack of implementations, though
+            less so than FMS.  Is this view roughly correct, and is there
+            context on it?
         </li>
         <li>
             Is it appropriate to call 802.11 GCR the most complex of the
@@ -540,6 +554,31 @@
             or more of the protocol solutions?
         </li>
       </ul>
+    </section>
+    <section>
+      <name>Privacy and Security Considerations</name>
+      <t>
+          Changing some 802.11 traffic from multicast transmission to unicast
+          results in different encryption mechanisms applying.  The unicast
+          mechanisms have better privacy and security expectations.
+      </t>
+      <t>
+          Battery depletion due to wasted power is a security concern in the
+          availability sense.  It may even be a safety concern when considering
+          emergency services.
+      </t>
+      <t>
+          Having routers keep track of all IPv6 hosts on a link has a minor
+          impact on privacy.  Routers will generally have most hosts in their
+          neighbor table out of necessity.  The same information would be kept
+          further.
+      </t>
+    </section>
+    <section>
+      <name>IANA Considerations</name>
+      <t>
+          This document has no IANA considerations.
+      </t>
     </section>
     <section anchor="acks" title="Acknowledgements">
       <t>
@@ -580,6 +619,9 @@
         <reference anchor="IPV6MC_L2UC">
           <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6085.xml" xpointer="xpointer(/reference/*)"/>
         </reference>
+        <reference anchor="MDNS">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
         <reference anchor="MLDv1">
           <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2710.xml" xpointer="xpointer(/reference/*)"/>
         </reference>
@@ -589,9 +631,12 @@
         <reference anchor="MLDsnoop">
           <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4541.xml" xpointer="xpointer(/reference/*)"/>
         </reference>
+        <reference anchor="MC-QUIC">
+          <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.jholland-quic-multicast.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
       </references>
     </references>
-    <section anchor="log" title="Change Log">
+    <section anchor="log" title="Change Log (to be removed before publishing)">
       <t>
         October 2026 [-01 after renaming]:
         restructure the entire document.
@@ -610,6 +655,10 @@
           language.  However, even in the absence of such language, the concern
           here is the specification interface between 802.11 and IPv6, hence
           this document is kept in 6man (as opposed to v6ops).
+      </t>
+      <t>
+          (Put plainly, making e.g. the IPv6 stack call the appropriate DMS or
+          FMS primitives is not an operational consideration.)
       </t>
     </section>
   </back>
