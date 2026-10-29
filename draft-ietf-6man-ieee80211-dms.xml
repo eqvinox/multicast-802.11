@@ -532,6 +532,13 @@
         </li>
       </ul>
     </section>
+    <section anchor="acks" title="Acknowledgements">
+      <t>
+          The mDNS issues described in this document were brought to attention
+          by Ted Lemon.  Thanks to János Farkas, Emily Kooistra, Pascal
+          Thubert, and Éric Vyncke for their input on this document.
+      </t>
+    </section>
   </middle>
   <back>
     <references>
