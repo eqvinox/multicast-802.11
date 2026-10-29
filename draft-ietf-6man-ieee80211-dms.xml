@@ -278,7 +278,7 @@
         </t>
         <t>
             If this approach is intentionally added to an RA sender
-            implementation, timers need to be choosen carefully to ensure there is sufficient
+            implementation, timers need to be chosen carefully to ensure there is sufficient
             variance in RA transmission timers at the sub-second level to avoid
             synchronizing with an 802.11 client implementing aggressive
             power-save by sleeping through a given fraction of DTIM periods.
@@ -365,7 +365,7 @@
         <t>
             GroupCast with Retries (GCR) may also work to alleviate some of the
             issues described here.  It performs either unsolicited retries, or
-            can use a block acknowledgement mechanism to determine necessary
+            can use a block acknowledgment mechanism to determine necessary
             retransmissions.  However, since it operates at a lower level than
             any other approach listed in this document, GCR is believed to be
             the most involved (and thus unlikely to succeed).  Due to this, GCR is
@@ -430,7 +430,7 @@
         <t>
             Performing this operation requires the router(s) to be aware of all
             IPv6 hosts - or at least all 802.11 IPv6 hosts - on a link.  If there
-            is only a single router, colocated with the (only) AP function(s) for an ESS, this could
+            is only a single router, co-located with the (only) AP function(s) for an ESS, this could
             utilize information from the 802.11 layer.  However, this stops
             working if more APs (or routers) are present or added to the ESS later.
             Alternatively, the router(s) would need to keep track of all hosts
