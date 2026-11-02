@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- vim: et:ts=2:sw=2
   -->
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-ietf-6man-ieee80211-dms-01" ipr="trust200902" obsoletes="" submissionType="IETF" consensus="true" xml:lang="en" version="3">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-ietf-6man-ieee80211-dms-02" ipr="trust200902" obsoletes="" submissionType="IETF" consensus="true" xml:lang="en" version="3">
   <front>
     <title abbrev="draft-ietf-6man-ieee80211-dms">IPv6 issues with 802.11 multicast reliability remain</title>
     <author fullname="David 'equinox' Lamparter" initials="D" surname="Lamparter">
@@ -659,6 +659,10 @@
       </references>
     </references>
     <section anchor="log" title="Change Log (to be removed before publishing)">
+      <t>
+        November 2026 [-02]:
+        add notes on solicited node multicast and option 108.
+      </t>
       <t>
         October 2026 [-01 after renaming]:
         restructure the entire document.
