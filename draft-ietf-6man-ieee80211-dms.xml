@@ -222,6 +222,14 @@
             is currently no standardized protocol to transfer MLD state
             between devices performing MLD snooping.
         </t>
+        <t>
+            The IPv6 solicited-node multicast groups would likely also be
+            affected by this problem.  In particular, depending on router
+            behavior, fundamental reachability issues in the opposite direction
+            of those caused by lost RAs can result.  At the time of writing of
+            this document, this was suspected but not confirmed to be seen
+            in actual deployments.
+        </t>
       </section>
       <section anchor="general_context">
         <name>General notes</name>
@@ -236,6 +244,13 @@
             use.  However, they do not seem to be sufficient to fully address
             this.  It is expressly suggested here that multiple of the outlined
             approaches may need to be taken simultaneously.
+        </t>
+        <t>
+            The increasing use of <xref target="DHCP108">DHCP option 108</xref>
+            for "IPv6-mostly" networks may explain why these issues are hit at
+            this particular point in time: previously, parallel deployment of
+            IPv4 and IPv6 would have worked to hide the actual impact of one
+            of the two being broken.
         </t>
       </section>
     </section>
@@ -630,6 +645,9 @@
         </reference>
         <reference anchor="MLDsnoop">
           <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4541.xml" xpointer="xpointer(/reference/*)"/>
+        </reference>
+        <reference anchor="DHCP108">
+          <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8925.xml" xpointer="xpointer(/reference/*)"/>
         </reference>
         <reference anchor="MC-QUIC">
           <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.jholland-quic-multicast.xml" xpointer="xpointer(/reference/*)"/>
