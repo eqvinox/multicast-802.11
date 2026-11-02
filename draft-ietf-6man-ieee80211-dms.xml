@@ -224,9 +224,10 @@
         </t>
         <t>
             The IPv6 solicited-node multicast groups would likely also be
-            affected by this problem.  In particular, depending on router
-            behavior, fundamental reachability issues in the opposite direction
-            of those caused by lost RAs can result.  At the time of writing of
+            affected by this problem.  In particular, this could prevent
+            routers from performing Neighbor Discovery for host addresses not
+            yet present in (or expired from) their neighbor cache, consequently
+            causing them to drop data packets.  At the time of writing of
             this document, this was suspected but not confirmed to be seen
             in actual deployments.
         </t>
