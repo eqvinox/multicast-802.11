@@ -229,7 +229,10 @@
             yet present in (or expired from) their neighbor cache, consequently
             causing them to drop data packets.  At the time of writing of
             this document, this was suspected but not confirmed to be seen
-            in actual deployments.
+            in actual deployments.  A number of 802.11 infrastructure products
+            implements some type of proxy Neighbor Discovery, which would
+            alleviate this issue to a varying degree depending on
+            implementation details.
         </t>
       </section>
       <section anchor="general_context">
